@@ -1,7 +1,7 @@
 # Student Name: [Mark]
 
 ## 1. My Assigned Work
-*I was responsible for implementing the scheduling page (`schedulePage.html`). This included building the fulfillment toggle (delivery vs. in-store pickup), a date picker with time window slots, a delivery address form, and a pickup info panel. I also wired the order summary to read live cart data from `localStorage` (matching the format used by the cart page) and added form validation and a confirmation banner on submit. I matched the existing site theme — `#9CAF88` / `#F0EAD6` color palette, Playfair Display and Open Sans fonts, and the shared Bootstrap 5 navbar — so the page fits seamlessly with my teammates' work.*
+*I was responsible for implementing the scheduling page (`schedulePage.html`). This included building the fulfillment toggle (delivery vs. in-store pickup), a date picker with time window slots, a delivery address form, and a pickup info panel. I also wired the order summary to read live cart data from `localStorage` (matching the format used by the cart page) and added form validation and a confirmation banner on submit.
 
 ## 2. AI / LLM Usage
 *Yes, I used AI tools during this process.*
