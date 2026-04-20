@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Order - Flower Shop</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+      .navbar {
+        background-color: #9CAF88;
+        font-family: 'Playfair Display', serif;
+      }
+      .navbar .navbar-brand,
+      .navbar .nav-link,
+      .navbar .nav-link.active {
+        color: #000000;
+      }
+      .navbar .btn {
+        color: #000000;
+        background-color: #9CAF88;
+        border: 1px solid #000000;
+      }
+      .navbar .form-control {
+        border: 1px solid #000000;
+      }
+      .navbar .form-control::placeholder {
+        color: #000000;
+      }
+
+      /* ── Global ── */
+      body {
+        background-color: #F0EAD6;
+        font-family: 'Open Sans', sans-serif;
+      }
+
+      /* ── Section headings ── */
+      .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #355E3B;
+        border-bottom: 2px solid #9CAF88;
+        padding-bottom: 0.35rem;
+        margin-bottom: 1.25rem;
+      }
+
+      /* ── Cards / panels ── */
+      .schedule-card {
+        background-color: #F0EAD6;
+        border: 1px solid #9CAF88;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+      }
+
+      /* ── Delivery toggle ── */
+      .delivery-toggle .btn-check:checked + .btn {
+        background-color: #355E3B;
+        color: #F0EAD6;
+        border-color: #355E3B;
+      }
+      .delivery-toggle .btn {
+        background-color: #F0EAD6;
+        border-color: #9CAF88;
+        color: #355E3B;
+        font-weight: 600;
+      }
+      .delivery-toggle .btn:hover {
+        background-color: #d6e0cc;
+      }
+
+      /* ── Form controls ── */
+      .form-control,
+      .form-select {
+        background-color: #faf8f2;
+        border: 1px solid #9CAF88;
+        color: #222;
+      }
+      .form-control:focus,
+      .form-select:focus {
+        border-color: #355E3B;
+        box-shadow: 0 0 0 0.2rem rgba(53, 94, 59, 0.2);
+        background-color: #faf8f2;
+      }
+      .form-label {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #333;
+      }
+
+      /* ── Time slots ── */
+      .time-slot input[type="radio"]:checked + label {
+        background-color: #355E3B;
+        color: #F0EAD6;
+        border-color: #355E3B;
+      }
+      .time-slot label {
+        cursor: pointer;
+        background-color: #F0EAD6;
+        border: 1px solid #9CAF88;
+        border-radius: 0.375rem;
+        padding: 0.45rem 0.85rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: background-color 0.15s, color 0.15s;
+        display: inline-block;
+        user-select: none;
+      }
+      .time-slot label:hover {
+        background-color: #d6e0cc;
+      }
+      .time-slot input[type="radio"] {
+        display: none;
+      }
+
+      /* ── Order summary table ── */
+      .summary-table {
+        --bs-table-bg: #F0EAD6;
+        background-color: #F0EAD6;
+        font-size: 0.9rem;
+      }
+      .summary-table thead th {
+        border-bottom: 2px solid #9CAF88;
+        color: #355E3B;
+        font-family: 'Playfair Display', serif;
+      }
+      .summary-total-row td {
+        font-weight: 700;
+        border-top: 2px solid #9CAF88;
+        font-size: 1rem;
+      }
+      .empty-cart-msg {
+        color: #888;
+        font-style: italic;
+        font-size: 0.9rem;
+      }
+
+      /* ── Primary action buttons ── */
+      .btn-confirm {
+        background-color: #355E3B;
+        border: none;
+        color: #F0EAD6;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.05rem;
+        padding: 0.65rem 1.5rem;
+        transition: background-color 0.2s;
+      }
+      .btn-confirm:hover {
+        background-color: #274830;
+        color: #F0EAD6;
+      }
+      .btn-back {
+        background-color: #F0EAD6;
+        border: 1px solid #9CAF88;
+        color: #355E3B;
+        font-weight: 600;
+        transition: background-color 0.15s;
+      }
+      .btn-back:hover {
+        background-color: #d6e0cc;
+        color: #274830;
+      }
+
+      /* ── Address section hide/show ── */
+      #addressSection {
+        display: block;
+      }
+      #pickupSection {
+        display: none;
+      }
+
+      /* ── Success confirmation overlay ── */
+      #confirmationBanner {
+        display: none;
+        background-color: #355E3B;
+        color: #F0EAD6;
+        border-radius: 0.5rem;
+        padding: 1.25rem 1.5rem;
+        margin-top: 1.5rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        text-align: center;
+      }
+      #confirmationBanner i {
+        font-size: 1.4rem;
+        vertical-align: middle;
+        margin-right: 0.4rem;
+      }
+
+      /* ── Fieldset legend ── */
+      legend {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #333;
+      }
+
+      /* ── Special instructions char count ── */
+      #charCount {
+        font-size: 0.78rem;
+        color: #888;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- ══ NAVBAR (mirrors team navbar from index.html / cart.html) ══ -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+      <div class="container-fluid">
+        <a href="index.html" class="navbar-brand">Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent"
+          aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a href="bouquetPage.html" class="nav-link">Bouquets</a></li>
+            <li class="nav-item"><a href="notDesign.html" class="nav-link">Occasions</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Account</a>
+              <ul class="dropdown-menu">
+                <li><a href="notDesign.html" class="dropdown-item">Settings</a></li>
+                <li><a href="cart.html" class="dropdown-item fw-bold text-success">
+                  <i class="bi bi-cart3"></i> View Cart
+                </a></li>
+              </ul>
+            </li>
+          </ul>
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Find flowers...">
+            <button class="btn btn-outline-dark" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ══ PAGE CONTENT ══ -->
+    <div class="container mt-5 mb-5">
+
+      <h1 class="mb-1" style="font-family:'Playfair Display',serif; font-weight:600;">
+        Schedule Your Order
+      </h1>
+      <p class="text-muted mb-4" style="font-size:0.95rem;">
+        Choose how and when you'd like to receive your blooms.
+      </p>
+
+      <div class="row g-4">
+
+        <!-- ── LEFT COLUMN: scheduling form ── -->
+        <div class="col-12 col-lg-7">
+
+          <!-- Delivery vs Pickup toggle -->
+          <div class="schedule-card mb-4">
+            <p class="section-title"><i class="bi bi-truck me-2"></i>Fulfillment Type</p>
+            <div class="btn-group delivery-toggle w-100" role="group" aria-label="Fulfillment type">
+              <input type="radio" class="btn-check" name="fulfillment" id="optDelivery" value="delivery" checked>
+              <label class="btn w-50" for="optDelivery">
+                <i class="bi bi-truck me-1"></i> Delivery
+              </label>
+              <input type="radio" class="btn-check" name="fulfillment" id="optPickup" value="pickup">
+              <label class="btn w-50" for="optPickup">
+                <i class="bi bi-shop me-1"></i> In-Store Pickup
+              </label>
+            </div>
+          </div>
+
+          <!-- Date & Time selection -->
+          <div class="schedule-card mb-4">
+            <p class="section-title"><i class="bi bi-calendar3 me-2"></i>Date &amp; Time</p>
+
+            <div class="mb-3">
+              <label for="deliveryDate" class="form-label">Preferred Date</label>
+              <input type="date" class="form-control" id="deliveryDate" required>
+            </div>
+
+            <fieldset>
+              <legend class="mb-2">Preferred Time Window</legend>
+              <div class="d-flex flex-wrap gap-2" id="timeSlots">
+                <div class="time-slot">
+                  <input type="radio" name="timeSlot" id="ts1" value="9am-11am" checked>
+                  <label for="ts1">9 AM – 11 AM</label>
+                </div>
+                <div class="time-slot">
+                  <input type="radio" name="timeSlot" id="ts2" value="11am-1pm">
+                  <label for="ts2">11 AM – 1 PM</label>
+                </div>
+                <div class="time-slot">
+                  <input type="radio" name="timeSlot" id="ts3" value="1pm-3pm">
+                  <label for="ts3">1 PM – 3 PM</label>
+                </div>
+                <div class="time-slot">
+                  <input type="radio" name="timeSlot" id="ts4" value="3pm-5pm">
+                  <label for="ts4">3 PM – 5 PM</label>
+                </div>
+                <div class="time-slot">
+                  <input type="radio" name="timeSlot" id="ts5" value="5pm-7pm">
+                  <label for="ts5">5 PM – 7 PM</label>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+
+          <!-- Address (delivery only) -->
+          <div class="schedule-card mb-4" id="addressSection">
+            <p class="section-title"><i class="bi bi-geo-alt me-2"></i>Delivery Address</p>
+
+            <div class="mb-3">
+              <label for="recipientName" class="form-label">Recipient Name</label>
+              <input type="text" class="form-control" id="recipientName" placeholder="Full name">
+            </div>
+            <div class="mb-3">
+              <label for="streetAddress" class="form-label">Street Address</label>
+              <input type="text" class="form-control" id="streetAddress" placeholder="123 Main St">
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-7">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" placeholder="Richmond">
+              </div>
+              <div class="col-2">
+                <label for="stateField" class="form-label">State</label>
+                <input type="text" class="form-control" id="stateField" placeholder="VA" maxlength="2">
+              </div>
+              <div class="col-3">
+                <label for="zip" class="form-label">ZIP</label>
+                <input type="text" class="form-control" id="zip" placeholder="23220" maxlength="5">
+              </div>
+            </div>
+          </div>
+
+          <!-- Pickup info (pickup only) -->
+          <div class="schedule-card mb-4" id="pickupSection">
+            <p class="section-title"><i class="bi bi-shop me-2"></i>Pickup Location</p>
+            <p class="mb-1"><strong>Bloom &amp; Co. Flower Shop</strong></p>
+            <p class="mb-0 text-muted" style="font-size:0.9rem;">
+              <i class="bi bi-pin-map me-1"></i> 1234 Flower Lane, Richmond, VA 23220
+            </p>
+            <p class="mt-2 text-muted" style="font-size:0.85rem;">
+              <i class="bi bi-clock me-1"></i> Store hours: Mon–Sat 9 AM – 7 PM, Sun 10 AM – 5 PM
+            </p>
+            <hr style="border-color:#9CAF88;">
+            <div class="mb-0">
+              <label for="pickupName" class="form-label">Pickup Name</label>
+              <input type="text" class="form-control" id="pickupName" placeholder="Name on the order">
+            </div>
+          </div>
+
+          <!-- Special instructions -->
+          <div class="schedule-card mb-4">
+            <p class="section-title"><i class="bi bi-chat-left-text me-2"></i>Special Instructions</p>
+            <textarea class="form-control" id="specialInstructions" rows="3"
+              placeholder="Leave at door, ring doorbell, gift message, allergies…"
+              maxlength="250" oninput="updateCharCount()"></textarea>
+            <div class="text-end mt-1">
+              <span id="charCount">0 / 250</span>
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="d-flex gap-3 flex-wrap">
+            <a href="cart.html" class="btn btn-back px-4">
+              <i class="bi bi-arrow-left me-1"></i> Back to Cart
+            </a>
+            <button class="btn btn-confirm px-4" onclick="submitSchedule()">
+              Confirm Schedule <i class="bi bi-check2-circle ms-1"></i>
+            </button>
+          </div>
+
+          <!-- Success banner -->
+          <div id="confirmationBanner">
+            <i class="bi bi-check-circle-fill"></i>
+            Order scheduled! We'll have your blooms ready for you.
+          </div>
+
+        </div>
+
+        <!-- ── RIGHT COLUMN: order summary ── -->
+        <div class="col-12 col-lg-5">
+          <div class="schedule-card">
+            <p class="section-title"><i class="bi bi-bag me-2"></i>Order Summary</p>
+
+            <div class="table-responsive">
+              <table class="table table-sm summary-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-end">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody id="summaryBody">
+                  <!-- populated by JS -->
+                </tbody>
+                <tfoot>
+                  <tr class="summary-total-row" id="totalRow">
+                    <!-- populated by JS -->
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <p id="emptyCartMsg" class="empty-cart-msg" style="display:none;">
+              Your cart is empty. <a href="bouquetPage.html">Keep shopping!</a>
+            </p>
+
+            <!-- Scheduling summary (filled on confirm) -->
+            <div id="scheduleSummary" style="display:none; font-size:0.88rem; margin-top:1rem;">
+              <hr style="border-color:#9CAF88;">
+              <p class="mb-1"><strong>Fulfillment:</strong> <span id="summFulfillment"></span></p>
+              <p class="mb-1"><strong>Date:</strong> <span id="summDate"></span></p>
+              <p class="mb-1"><strong>Time Window:</strong> <span id="summTime"></span></p>
+              <p class="mb-0" id="summAddressRow"><strong>Address:</strong> <span id="summAddress"></span></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /container -->
+
+    <script>
+      /* ── Minimum date = today ── */
+      (function setMinDate() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('deliveryDate').min = today;
+        document.getElementById('deliveryDate').value = today;
+      })();
+
+      /* ── Toggle address / pickup panels ── */
+      document.querySelectorAll('input[name="fulfillment"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+          const isDelivery = this.value === 'delivery';
+          document.getElementById('addressSection').style.display = isDelivery ? 'block' : 'none';
+          document.getElementById('pickupSection').style.display  = isDelivery ? 'none'  : 'block';
+        });
+      });
+
+      /* ── Char counter ── */
+      function updateCharCount() {
+        const txt = document.getElementById('specialInstructions');
+        document.getElementById('charCount').textContent = `${txt.value.length} / 250`;
+      }
+
+      /* ── Cart helpers (mirrors cart.html) ── */
+      function getCart() {
+        return JSON.parse(localStorage.getItem('cart')) || [];
+      }
+
+      /* ── Render order summary table ── */
+      function renderSummary() {
+        const cart = getCart();
+        const tbody = document.getElementById('summaryBody');
+        const tfoot = document.getElementById('totalRow');
+        const emptyMsg = document.getElementById('emptyCartMsg');
+
+        tbody.innerHTML = '';
+        tfoot.innerHTML = '';
+
+        if (cart.length === 0) {
+          emptyMsg.style.display = 'block';
+          return;
+        }
+
+        emptyMsg.style.display = 'none';
+        let total = 0;
+
+        cart.forEach(item => {
+          const subtotal = item.price * item.count;
+          total += subtotal;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.name}</td>
+            <td class="text-center">${item.count}</td>
+            <td class="text-end">$${subtotal.toFixed(2)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        tfoot.innerHTML = `
+          <td colspan="2">Total</td>
+          <td class="text-end">$${total.toFixed(2)}</td>
+        `;
+      }
+
+      /* ── Submit / confirm handler ── */
+      function submitSchedule() {
+        /* Basic validation */
+        const date = document.getElementById('deliveryDate').value;
+        if (!date) {
+          alert('Please choose a delivery or pickup date.');
+          return;
+        }
+
+        const fulfillment = document.querySelector('input[name="fulfillment"]:checked').value;
+
+        if (fulfillment === 'delivery') {
+          const name   = document.getElementById('recipientName').value.trim();
+          const street = document.getElementById('streetAddress').value.trim();
+          const city   = document.getElementById('city').value.trim();
+          const zip    = document.getElementById('zip').value.trim();
+          if (!name || !street || !city || !zip) {
+            alert('Please fill in all delivery address fields.');
+            return;
+          }
+        } else {
+          const pickupName = document.getElementById('pickupName').value.trim();
+          if (!pickupName) {
+            alert('Please enter the pickup name.');
+            return;
+          }
+        }
+
+        /* Populate scheduling summary panel */
+        const timeSlot = document.querySelector('input[name="timeSlot"]:checked').value;
+        const dateFormatted = new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        document.getElementById('summFulfillment').textContent =
+          fulfillment === 'delivery' ? 'Delivery' : 'In-Store Pickup';
+        document.getElementById('summDate').textContent = dateFormatted;
+        document.getElementById('summTime').textContent = timeSlot.replace(/-/g, ' – ');
+
+        if (fulfillment === 'delivery') {
+          const street = document.getElementById('streetAddress').value.trim();
+          const city   = document.getElementById('city').value.trim();
+          const state  = document.getElementById('stateField').value.trim();
+          const zip    = document.getElementById('zip').value.trim();
+          document.getElementById('summAddress').textContent = `${street}, ${city}, ${state} ${zip}`;
+          document.getElementById('summAddressRow').style.display = 'block';
+        } else {
+          document.getElementById('summAddressRow').style.display = 'none';
+        }
+
+        document.getElementById('scheduleSummary').style.display = 'block';
+
+        /* Show confirmation banner */
+        const banner = document.getElementById('confirmationBanner');
+        banner.style.display = 'block';
+        banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      /* ── Init ── */
+      document.addEventListener('DOMContentLoaded', renderSummary);
+    </script>
+
+  </body>
+</html>
