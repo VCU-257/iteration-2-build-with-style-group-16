@@ -193,7 +193,13 @@
       const row = document.createElement("tr");
 
       row.innerHTML = `
-        <th scope="row">${item.count}</th>
+        <td>
+          <div class="d-flex align-items-center gap-1">
+            <button class="btn btn-sm btn-secondary" onclick="changeCount('${item.id}', -1)">-</button>
+            <span>${item.count}</span>
+            <button class="btn btn-sm btn-secondary" onclick="changeCount('${item.id}', 1)">+</button>
+          </div>
+        </td>
         <td>${item.name}</td>
         <td>$${item.price}</td>
         <td>${item.id}</td>
@@ -214,6 +220,20 @@
     saveCart(cart);
     renderCart();
   }
+  
+  function changeCount(id, delta) {
+    let cart = getCart();
+
+    cart = cart.map(item => {
+      if (item.id === id) {
+        item.count = Math.max(1, item.count + delta);
+      }
+      return item;
+    });
+
+    saveCart(cart);
+    renderCart();
+}
 
   document.addEventListener("DOMContentLoaded", () => {
   seedCartIfEmpty();
